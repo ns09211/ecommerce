@@ -1,0 +1,109 @@
+{% extends 'shop/basic.html' %}
+{% block title%} My Awesome Cart Tracker{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="col my-4">
+            <h3>My Awesome Cart Tracker .Enter your OrderID and Email to track your order</h3>
+        <form method="post" action="#" id="trackerform"> {% csrf_token %}
+                        <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputname">Order Id</label>
+                    <input type="text" class="form-control" id="orderid" placeholder="OrderID" name="orderid">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail4">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" >
+                </div>
+            
+            <button type="submit" class="btn btn-primary">Track Order</button></div></div>
+            
+        <div class="my-4">
+            <h4>Your Order Status</h4>
+            <ul class="list-group" id="items">
+                <p>Please enter your order id and email and track your order</p>
+            </ul>
+        </div>
+
+        <div class="my-4">
+            <h4>Your Order Details</h4>
+            <ul class="list-group" id="oitems">
+
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+
+$('#trackerform').submit(function(event){
+
+    $('#items').empty()
+    var formData={
+        'orderid':$('input[name=orderid]').val(),
+        'email':$('input[name=email]').val(),
+        'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+
+
+    };
+    $.ajax({
+        type:'POST',
+        url:'/shop/tracker/',
+        data:formData,
+        encode:true
+    })
+    .done(function(data){
+        $('#oitems').empty();
+
+        console.log(data);
+        data=JSON.parse(data);
+        
+        
+        if(data['status']=='success'){
+            
+            updates=data['updates'];
+            for (i=0; i<updates.length; i++){
+                 let text=updates[i]['text'];
+                let time=updates[i]['time'];
+
+        mystr=`<li class="list-group-item d-flex justify-content-between align-items-center">${text}
+                    <span class="badge badge-primary badge-pill">${time}</span>
+               </li>`
+           $('#items').append(mystr);
+           
+           
+       
+       }
+
+        cart=JSON.parse(data['items_json']);
+        console.log(cart);
+        for (items in cart){
+        let name=cart[items][1];
+        let qty=cart[items][0];
+
+        mystr=`<li class="list-group-item d-flex justify-content-between align-items-center">${name}
+                    <span class="badge badge-primary badge-pill">${qty}</span>
+               </li>`
+           $('#oitems').append(mystr);
+       } 
+
+   
+        }
+    else
+    {
+       mystr=`<li class="list-group-item d-flex justify-content-between align-items-center">Sorry ,We are not able to fetch details ,so please check your above entered details
+               </li>`
+         str=`<li class="list-group-item d-flex justify-content-between align-items-center">Sorry ,Wrong entry may be
+               </li>`
+           $('#items').append(mystr); 
+           $('#oitems').append(str);
+  
+    }
+
+    });
+    event.preventDefault();
+
+});
+</script>
+
+{% endblock %}

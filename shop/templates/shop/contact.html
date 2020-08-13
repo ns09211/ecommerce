@@ -1,0 +1,59 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %}Contact Us {% endblock %}
+{% block body %}
+<div class="container">
+    <h1 >Contact us </h1>
+     <form name="contact" method="post" action="/shop/contact/"> {% csrf_token %}
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
+  </div>
+        <div class="form-group">
+    <label for="name">Email Address</label>
+    <input type="email" class="form-control" id="email"  name="email" placeholder="Enter your email address">
+  </div>
+        <div class="form-group">
+    <label for="name">Phone Number</label>
+    <input type="phone" class="form-control" id="phone" name="phone" placeholder="Enter your phone number">
+  </div>
+        <div class="form-group">
+    <label for="name">Query</label>
+            <textarea class="form-control"  id="desc"  name="desc" row="6"></textarea>
+  </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+
+</form>
+    </div>
+
+
+
+
+{% endblock %}
+{% block js %}
+
+<script>
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+
+var sum=0;
+
+for (item in cart){
+let qty=cart[item][0];
+sum=sum+qty;
+}
+document.getElementById('cart').innerHTML = sum;
+
+{% if thanks %}
+alert('Thanks for contacting us.We get your message and we will reach you as soon as possible.');
+
+{% endif %}
+
+</script>
+
+{% endblock %}
+
+
